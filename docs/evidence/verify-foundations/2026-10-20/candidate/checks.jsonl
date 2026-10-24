@@ -1,0 +1,98 @@
+{"check":"serve","target":"http://127.0.0.1:52177","ok":true,"detail":"process group 3271964; stop with: verify-foundations stop --out ~/.cache/tmp/verify-foundations/evidence5/candidate"}
+{"check":"doctor","target":"tools","ok":true,"detail":"missing: none"}
+{"check":"doctor","target":"http://127.0.0.1:52177/","ok":true,"detail":"status 200, text/html; charset=utf-8"}
+{"check":"doctor","target":"served revision","ok":true,"detail":"f88a9806af817f255b09e3847de06b807ea0b24a"}
+{"check":"doctor","target":"candidate is HEAD","ok":true,"detail":"served f88a9806af817f255b09e3847de06b807ea0b24a, HEAD f88a9806af817f255b09e3847de06b807ea0b24a"}
+{"check":"doctor","target":"GitHub reader","ok":true,"detail":"gh moomooskycow reads private misty-step/foundations"}
+{"check":"routes","target":"/index.md","ok":true,"detail":"status 200, text/markdown; charset=utf-8, bytes 4372 vs source at f88a9806af81"}
+{"check":"routes","target":"/way-of-working.md","ok":true,"detail":"status 200, text/markdown; charset=utf-8, bytes 8113 vs source at f88a9806af81"}
+{"check":"routes","target":"/","ok":true,"detail":"status 200, text/html; charset=utf-8, nav + revision + Markdown + History links, no script"}
+{"check":"routes","target":"/way-of-working","ok":true,"detail":"status 200, text/html; charset=utf-8, nav + revision + Markdown + History links, no script"}
+{"check":"routes","target":"/research","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/research/ci","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/research/ci/","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/research/ci.html","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/research/ci.md","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/research/ci-evidence.json","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/revision.txt","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/404.html","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/_headers","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/not-a-reference","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/ after 404s","ok":true,"detail":"status 200"}
+{"check":"anchors","target":"/#1","ok":true,"detail":"article 1: One job, least code."}
+{"check":"anchors","target":"/#2","ok":true,"detail":"article 2: One home per fact."}
+{"check":"anchors","target":"/#3","ok":true,"detail":"article 3: Specified."}
+{"check":"anchors","target":"/#4","ok":true,"detail":"article 4: Proven on the real path."}
+{"check":"anchors","target":"/#5","ok":true,"detail":"article 5: Runnable by a stranger."}
+{"check":"anchors","target":"/#6","ok":true,"detail":"article 6: Continuously deployed."}
+{"check":"anchors","target":"/#7","ok":true,"detail":"article 7: Data survives."}
+{"check":"anchors","target":"/#8","ok":true,"detail":"article 8: Loud and self-healing."}
+{"check":"anchors","target":"/#9","ok":true,"detail":"article 9: Private and secure."}
+{"check":"anchors","target":"/#10","ok":true,"detail":"article 10: Finished face."}
+{"check":"anchors","target":"/#11","ok":true,"detail":"article 11: Explicit state."}
+{"check":"anchors","target":"/#12","ok":true,"detail":"article 12: Agent ergonomic."}
+{"check":"anchors","target":"articles in index.md","ok":true,"detail":"12 numbered articles found"}
+{"check":"anchors","target":"/way-of-working#decide","ok":true,"detail":"section Decide"}
+{"check":"anchors","target":"/way-of-working#scope","ok":true,"detail":"section Scope"}
+{"check":"anchors","target":"/way-of-working#build","ok":true,"detail":"section Build"}
+{"check":"anchors","target":"/way-of-working#milei-check","ok":true,"detail":"section Milei check"}
+{"check":"anchors","target":"/way-of-working#prove","ok":true,"detail":"section Prove"}
+{"check":"anchors","target":"/way-of-working#review","ok":true,"detail":"section Review"}
+{"check":"anchors","target":"/way-of-working#ship","ok":true,"detail":"section Ship"}
+{"check":"anchors","target":"/way-of-working#claim-precisely","ok":true,"detail":"section Claim precisely"}
+{"check":"anchors","target":"/way-of-working#operate","ok":true,"detail":"section Operate"}
+{"check":"anchors","target":"/way-of-working#audit","ok":true,"detail":"section Audit"}
+{"check":"anchors","target":"/way-of-working#stack","ok":true,"detail":"section Stack"}
+{"check":"anchors","target":"/way-of-working#ci-deploy-credentials","ok":true,"detail":"section CI deploy credentials"}
+{"check":"anchors","target":"/way-of-working#keep-it-living","ok":true,"detail":"section Keep it living"}
+{"check":"citation","target":".agents/skills/verify-foundations/features/cited-anchors.md:3","ok":true,"detail":"https://foundations.mistystep.io/#12"}
+{"check":"citation","target":".agents/skills/verify-foundations/features/cited-anchors.md:3","ok":true,"detail":"https://foundations.mistystep.io/way-of-working#prove"}
+{"check":"citation","target":".agents/skills/verify-foundations/features/cited-anchors.md:14","ok":true,"detail":"https://foundations.mistystep.io/#12"}
+{"check":"citation","target":".agents/skills/verify-foundations/features/cited-anchors.md:3","ok":true,"detail":"Foundations article 12 -> /#12"}
+{"check":"citation","target":"~/.claude/CLAUDE.md:15","ok":true,"detail":"Foundations](https://foundations.mistystep.io/) article 12 -> /#12"}
+{"check":"citation","target":"~/.codex/AGENTS.md:15","ok":true,"detail":"Foundations](https://foundations.mistystep.io/) article 12 -> /#12"}
+{"check": "read", "target": "/ phone light", "ok": true, "status": 200, "h1": "Constitution", "nav_links": true, "scroll_width": 390, "client_width": 390, "background": "rgb(251, 251, 250)", "screenshot": "constitution-phone-light.png"}
+{"check": "read", "target": "/ phone dark", "ok": true, "status": 200, "h1": "Constitution", "nav_links": true, "scroll_width": 390, "client_width": 390, "background": "rgb(25, 28, 26)", "screenshot": "constitution-phone-dark.png"}
+{"check": "read", "target": "/ desktop light", "ok": true, "status": 200, "h1": "Constitution", "nav_links": true, "scroll_width": 1440, "client_width": 1440, "background": "rgb(251, 251, 250)", "screenshot": "constitution-desktop-light.png"}
+{"check": "read", "target": "/ desktop dark", "ok": true, "status": 200, "h1": "Constitution", "nav_links": true, "scroll_width": 1440, "client_width": 1440, "background": "rgb(25, 28, 26)", "screenshot": "constitution-desktop-dark.png"}
+{"check": "color-scheme", "target": "/ phone", "ok": true, "light": "rgb(251, 251, 250)", "dark": "rgb(25, 28, 26)"}
+{"check": "color-scheme", "target": "/ desktop", "ok": true, "light": "rgb(251, 251, 250)", "dark": "rgb(25, 28, 26)"}
+{"check": "read", "target": "/way-of-working phone light", "ok": true, "status": 200, "h1": "Way of working", "nav_links": true, "scroll_width": 390, "client_width": 390, "background": "rgb(251, 251, 250)", "screenshot": "way-of-working-phone-light.png"}
+{"check": "read", "target": "/way-of-working phone dark", "ok": true, "status": 200, "h1": "Way of working", "nav_links": true, "scroll_width": 390, "client_width": 390, "background": "rgb(25, 28, 26)", "screenshot": "way-of-working-phone-dark.png"}
+{"check": "read", "target": "/way-of-working desktop light", "ok": true, "status": 200, "h1": "Way of working", "nav_links": true, "scroll_width": 1440, "client_width": 1440, "background": "rgb(251, 251, 250)", "screenshot": "way-of-working-desktop-light.png"}
+{"check": "read", "target": "/way-of-working desktop dark", "ok": true, "status": 200, "h1": "Way of working", "nav_links": true, "scroll_width": 1440, "client_width": 1440, "background": "rgb(25, 28, 26)", "screenshot": "way-of-working-desktop-dark.png"}
+{"check": "color-scheme", "target": "/way-of-working phone", "ok": true, "light": "rgb(251, 251, 250)", "dark": "rgb(25, 28, 26)"}
+{"check": "color-scheme", "target": "/way-of-working desktop", "ok": true, "light": "rgb(251, 251, 250)", "dark": "rgb(25, 28, 26)"}
+{"check": "navigate", "target": "Constitution -> Way of working", "ok": true, "url": "http://127.0.0.1:52177/way-of-working"}
+{"check": "navigate", "target": "Way of working -> Constitution", "ok": true, "url": "http://127.0.0.1:52177/"}
+{"check": "navigate", "target": "footer Markdown link", "ok": true, "status": 200, "content_type": "text/markdown; charset=utf-8", "revision": "f88a9806af817f255b09e3847de06b807ea0b24a"}
+{"check": "anchors-present", "target": "/", "ok": true, "ids": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]}
+{"check": "anchor", "target": "/#1", "ok": true, "start_top": 316.9, "top": -0.1, "scroll_y": 317, "at_end": false}
+{"check": "anchor", "target": "/#2", "ok": true, "start_top": 988.0, "top": 0.0, "scroll_y": 988, "at_end": false}
+{"check": "anchor", "target": "/#3", "ok": true, "start_top": 1362.3, "top": 0.3, "scroll_y": 1362, "at_end": false}
+{"check": "anchor", "target": "/#4", "ok": true, "start_top": 1647.5, "top": 0.5, "scroll_y": 1647, "at_end": false}
+{"check": "anchor", "target": "/#5", "ok": true, "start_top": 1903.0, "top": -0.0, "scroll_y": 1903, "at_end": false}
+{"check": "anchor", "target": "/#6", "ok": true, "start_top": 2039.7, "top": -0.3, "scroll_y": 2040, "at_end": false}
+{"check": "anchor", "target": "/#7", "ok": true, "start_top": 2532.7, "top": -0.3, "scroll_y": 2533, "at_end": false}
+{"check": "anchor", "target": "/#8", "ok": true, "start_top": 2758.5, "top": -0.5, "scroll_y": 2759, "at_end": false}
+{"check": "anchor", "target": "/#9", "ok": true, "start_top": 3043.7, "top": -0.3, "scroll_y": 3044, "at_end": false}
+{"check": "anchor", "target": "/#10", "ok": true, "start_top": 3299.2, "top": 0.2, "scroll_y": 3299, "at_end": false}
+{"check": "anchor", "target": "/#11", "ok": true, "start_top": 3614.1, "top": 120.1, "scroll_y": 3494, "at_end": true}
+{"check": "anchor", "target": "/#12", "ok": true, "start_top": 3869.6, "top": 375.6, "scroll_y": 3494, "at_end": true}
+{"check": "anchors-present", "target": "/way-of-working", "ok": true, "ids": ["decide", "scope", "build", "milei-check", "prove", "review", "ship", "claim-precisely", "operate", "audit", "stack", "ci-deploy-credentials", "keep-it-living"]}
+{"check": "anchor", "target": "/way-of-working#decide", "ok": true, "start_top": 287.2, "top": 0.2, "scroll_y": 287, "at_end": false}
+{"check": "anchor", "target": "/way-of-working#scope", "ok": true, "start_top": 720.8, "top": -0.2, "scroll_y": 721, "at_end": false}
+{"check": "anchor", "target": "/way-of-working#build", "ok": true, "start_top": 1273.2, "top": 0.2, "scroll_y": 1273, "at_end": false}
+{"check": "anchor", "target": "/way-of-working#milei-check", "ok": true, "start_top": 1736.5, "top": -0.5, "scroll_y": 1737, "at_end": false}
+{"check": "anchor", "target": "/way-of-working#prove", "ok": true, "start_top": 2140.5, "top": 0.5, "scroll_y": 2140, "at_end": false}
+{"check": "anchor", "target": "/way-of-working#review", "ok": true, "start_top": 3316.3, "top": 0.3, "scroll_y": 3316, "at_end": false}
+{"check": "anchor", "target": "/way-of-working#ship", "ok": true, "start_top": 3749.9, "top": -0.1, "scroll_y": 3750, "at_end": false}
+{"check": "anchor", "target": "/way-of-working#claim-precisely", "ok": true, "start_top": 4510.1, "top": 0.1, "scroll_y": 4510, "at_end": false}
+{"check": "anchor", "target": "/way-of-working#operate", "ok": true, "start_top": 4706.2, "top": 0.2, "scroll_y": 4706, "at_end": false}
+{"check": "anchor", "target": "/way-of-working#audit", "ok": true, "start_top": 5021.1, "top": 0.1, "scroll_y": 5021, "at_end": false}
+{"check": "anchor", "target": "/way-of-working#stack", "ok": true, "start_top": 5276.6, "top": -0.4, "scroll_y": 5277, "at_end": false}
+{"check": "anchor", "target": "/way-of-working#ci-deploy-credentials", "ok": true, "start_top": 5597.8, "top": -0.2, "scroll_y": 5598, "at_end": false}
+{"check": "anchor", "target": "/way-of-working#keep-it-living", "ok": true, "start_top": 6571.6, "top": 523.6, "scroll_y": 6048, "at_end": true}
+{"check": "not-found", "target": "/not-a-reference", "ok": true, "status": 404}
+{"check": "recover", "target": "/ after 404", "ok": true, "status": 200}
+{"check":"stop","target":"http://127.0.0.1:52177","ok":true,"detail":"killed process group 3271964, which serve started; http://127.0.0.1:52177 no longer answers"}

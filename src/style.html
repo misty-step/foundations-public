@@ -1,0 +1,13 @@
+<style>
+:root { color-scheme: light dark; --paper: #fbfbfa; --ink: #202321; --link: #195a47; }
+@media (prefers-color-scheme: dark) { :root { --paper: #191c1a; --ink: #e9ece9; --link: #9bd0b9; } }
+* { box-sizing: border-box; }
+html { background: var(--paper); color: var(--ink); font: 18px/1.65 system-ui, sans-serif; }
+body { max-width: 48rem; margin: auto; padding: 2rem 1.25rem 4rem; overflow-wrap: anywhere; }
+h1 { font: 500 clamp(2.6rem, 8vw, 4rem)/1.1 Georgia, serif; letter-spacing: -.03em; margin: 0 0 1.5rem; }
+h2 { font-size: 1.5rem; line-height: 1.25; margin: 3rem 0 1rem; }
+li { margin: .8rem 0; } ul { padding-left: 1.3rem; }
+a { color: var(--link); text-underline-offset: .2em; }
+a:focus-visible { outline: 3px solid var(--link); outline-offset: 4px; }
+code { font-size: .88em; } nav { margin-bottom: 2rem; } footer { margin-top: 3rem; font-size: .85rem; }
+</style>

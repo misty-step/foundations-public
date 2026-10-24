@@ -1,0 +1,77 @@
+{"check":"doctor","target":"tools","ok":true,"detail":"missing: none"}
+{"check":"doctor","target":"https://foundations.mistystep.io/","ok":true,"detail":"status 200, text/html"}
+{"check":"doctor","target":"served revision","ok":true,"detail":"29c2ec293effc006fce90fb5c155e23caa75ea00"}
+{"check":"doctor","target":"live is master","ok":true,"detail":"served 29c2ec293effc006fce90fb5c155e23caa75ea00, master 29c2ec293effc006fce90fb5c155e23caa75ea00; latest Publication run: 29c2ec293effc006fce90fb5c155e23caa75ea00 completed success https://github.com/misty-step/foundations/actions/runs/39457229174"}
+{"check":"doctor","target":"GitHub reader","ok":true,"detail":"gh moomooskycow reads private misty-step/foundations"}
+{"check":"routes","target":"/index.md","ok":true,"detail":"status 200, text/markdown; charset=utf-8, bytes 4372 vs source at 29c2ec293eff"}
+{"check":"routes","target":"/way-of-working.md","ok":true,"detail":"status 200, text/markdown; charset=utf-8, bytes 8113 vs source at 29c2ec293eff"}
+{"check":"routes","target":"/","ok":true,"detail":"status 200, text/html, nav + revision + Markdown + History links, no script"}
+{"check":"routes","target":"/way-of-working","ok":true,"detail":"status 200, text/html, nav + revision + Markdown + History links, no script"}
+{"check":"routes","target":"/research","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/research/ci","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/research/ci/","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/research/ci.html","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/research/ci.md","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/research/ci-evidence.json","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/revision.txt","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/404.html","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/_headers","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/not-a-reference","ok":true,"detail":"status 404"}
+{"check":"routes","target":"/ after 404s","ok":true,"detail":"status 200"}
+{"check":"anchors","target":"/#1","ok":false,"detail":"article 1: One job, least code."}
+{"check":"anchors","target":"/#2","ok":false,"detail":"article 2: One home per fact."}
+{"check":"anchors","target":"/#3","ok":false,"detail":"article 3: Specified."}
+{"check":"anchors","target":"/#4","ok":false,"detail":"article 4: Proven on the real path."}
+{"check":"anchors","target":"/#5","ok":false,"detail":"article 5: Runnable by a stranger."}
+{"check":"anchors","target":"/#6","ok":false,"detail":"article 6: Continuously deployed."}
+{"check":"anchors","target":"/#7","ok":false,"detail":"article 7: Data survives."}
+{"check":"anchors","target":"/#8","ok":false,"detail":"article 8: Loud and self-healing."}
+{"check":"anchors","target":"/#9","ok":false,"detail":"article 9: Private and secure."}
+{"check":"anchors","target":"/#10","ok":false,"detail":"article 10: Finished face."}
+{"check":"anchors","target":"/#11","ok":false,"detail":"article 11: Explicit state."}
+{"check":"anchors","target":"/#12","ok":false,"detail":"article 12: Agent ergonomic."}
+{"check":"anchors","target":"articles in index.md","ok":true,"detail":"12 numbered articles found"}
+{"check":"anchors","target":"/way-of-working#decide","ok":false,"detail":"section Decide"}
+{"check":"anchors","target":"/way-of-working#scope","ok":false,"detail":"section Scope"}
+{"check":"anchors","target":"/way-of-working#build","ok":false,"detail":"section Build"}
+{"check":"anchors","target":"/way-of-working#milei-check","ok":false,"detail":"section Milei check"}
+{"check":"anchors","target":"/way-of-working#prove","ok":false,"detail":"section Prove"}
+{"check":"anchors","target":"/way-of-working#review","ok":false,"detail":"section Review"}
+{"check":"anchors","target":"/way-of-working#ship","ok":false,"detail":"section Ship"}
+{"check":"anchors","target":"/way-of-working#claim-precisely","ok":false,"detail":"section Claim precisely"}
+{"check":"anchors","target":"/way-of-working#operate","ok":false,"detail":"section Operate"}
+{"check":"anchors","target":"/way-of-working#audit","ok":false,"detail":"section Audit"}
+{"check":"anchors","target":"/way-of-working#stack","ok":false,"detail":"section Stack"}
+{"check":"anchors","target":"/way-of-working#ci-deploy-credentials","ok":false,"detail":"section CI deploy credentials"}
+{"check":"anchors","target":"/way-of-working#keep-it-living","ok":false,"detail":"section Keep it living"}
+{"check":"citation","target":".agents/skills/verify-foundations/features/cited-anchors.md:3","ok":false,"detail":"https://foundations.mistystep.io/#12"}
+{"check":"citation","target":".agents/skills/verify-foundations/features/cited-anchors.md:3","ok":false,"detail":"https://foundations.mistystep.io/way-of-working#prove"}
+{"check":"citation","target":".agents/skills/verify-foundations/features/cited-anchors.md:14","ok":false,"detail":"https://foundations.mistystep.io/#12"}
+{"check":"citation","target":".agents/skills/verify-foundations/features/cited-anchors.md:3","ok":false,"detail":"Foundations article 12 -> /#12"}
+{"check":"citation","target":"~/.claude/CLAUDE.md:15","ok":false,"detail":"Foundations](https://foundations.mistystep.io/) article 12 -> /#12"}
+{"check":"citation","target":"~/.codex/AGENTS.md:15","ok":false,"detail":"Foundations](https://foundations.mistystep.io/) article 12 -> /#12"}
+{"check": "read", "target": "/ phone light", "ok": true, "status": 200, "h1": "Constitution", "nav_links": true, "scroll_width": 390, "client_width": 390, "background": "rgb(251, 251, 250)", "screenshot": "constitution-phone-light.png"}
+{"check": "read", "target": "/ phone dark", "ok": true, "status": 200, "h1": "Constitution", "nav_links": true, "scroll_width": 390, "client_width": 390, "background": "rgb(25, 28, 26)", "screenshot": "constitution-phone-dark.png"}
+{"check": "read", "target": "/ desktop light", "ok": true, "status": 200, "h1": "Constitution", "nav_links": true, "scroll_width": 1440, "client_width": 1440, "background": "rgb(251, 251, 250)", "screenshot": "constitution-desktop-light.png"}
+{"check": "read", "target": "/ desktop dark", "ok": true, "status": 200, "h1": "Constitution", "nav_links": true, "scroll_width": 1440, "client_width": 1440, "background": "rgb(25, 28, 26)", "screenshot": "constitution-desktop-dark.png"}
+{"check": "color-scheme", "target": "/ phone", "ok": true, "light": "rgb(251, 251, 250)", "dark": "rgb(25, 28, 26)"}
+{"check": "color-scheme", "target": "/ desktop", "ok": true, "light": "rgb(251, 251, 250)", "dark": "rgb(25, 28, 26)"}
+{"check": "read", "target": "/way-of-working phone light", "ok": true, "status": 200, "h1": "Way of working", "nav_links": true, "scroll_width": 390, "client_width": 390, "background": "rgb(251, 251, 250)", "screenshot": "way-of-working-phone-light.png"}
+{"check": "read", "target": "/way-of-working phone dark", "ok": true, "status": 200, "h1": "Way of working", "nav_links": true, "scroll_width": 390, "client_width": 390, "background": "rgb(25, 28, 26)", "screenshot": "way-of-working-phone-dark.png"}
+{"check": "read", "target": "/way-of-working desktop light", "ok": true, "status": 200, "h1": "Way of working", "nav_links": true, "scroll_width": 1440, "client_width": 1440, "background": "rgb(251, 251, 250)", "screenshot": "way-of-working-desktop-light.png"}
+{"check": "read", "target": "/way-of-working desktop dark", "ok": true, "status": 200, "h1": "Way of working", "nav_links": true, "scroll_width": 1440, "client_width": 1440, "background": "rgb(25, 28, 26)", "screenshot": "way-of-working-desktop-dark.png"}
+{"check": "color-scheme", "target": "/way-of-working phone", "ok": true, "light": "rgb(251, 251, 250)", "dark": "rgb(25, 28, 26)"}
+{"check": "color-scheme", "target": "/way-of-working desktop", "ok": true, "light": "rgb(251, 251, 250)", "dark": "rgb(25, 28, 26)"}
+{"check": "navigate", "target": "Constitution -> Way of working", "ok": true, "url": "https://foundations.mistystep.io/way-of-working"}
+{"check": "navigate", "target": "Way of working -> Constitution", "ok": true, "url": "https://foundations.mistystep.io/"}
+{"check": "navigate", "target": "footer Markdown link", "ok": true, "status": 200, "content_type": "text/markdown; charset=utf-8", "revision": "29c2ec293effc006fce90fb5c155e23caa75ea00"}
+{"check": "anchors-present", "target": "/", "ok": false, "ids": []}
+{"check": "anchors-present", "target": "/way-of-working", "ok": false, "ids": []}
+{"check": "not-found", "target": "/not-a-reference", "ok": true, "status": 404}
+{"check": "recover", "target": "/ after 404", "ok": true, "status": 200}
+{"check":"access","target":"anonymous revision link","ok":true,"detail":"status 404 (404 = private repository, expected without org access)"}
+{"check":"access","target":"revision link as org reader","ok":true,"detail":"gh api commits/29c2ec293effc006fce90fb5c155e23caa75ea00 -> 29c2ec293effc006fce90fb5c155e23caa75ea00"}
+{"check":"access","target":"revision is on master","ok":true,"detail":"master is identical of 29c2ec293effc006fce90fb5c155e23caa75ea00"}
+{"check":"access","target":"History link index.md","ok":true,"detail":"latest change 29c2ec293effc006fce90fb5c155e23caa75ea00"}
+{"check":"access","target":"History link way-of-working.md","ok":true,"detail":"latest change efa4419a357af349db91b527113b03f02774b4ac"}
+{"check":"readback","target":"https://foundations.mistystep.io","ok":true,"detail":"Canonical reference documents and revision links match the verified artifact; removed routes return 404. (built 29c2ec293eff)"}

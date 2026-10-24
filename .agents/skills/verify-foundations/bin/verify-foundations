@@ -1,0 +1,337 @@
+#!/usr/bin/env bash
+# Drive Foundations (https://foundations.mistystep.io) the way its readers do.
+# Usage: verify-foundations <command> [--base URL] [--out DIR] [PATH...]
+# Commands: doctor routes anchors access browse readback build serve stop all
+# Each check prints one JSON line on stdout and appends it to OUT/checks.jsonl.
+# Exit status is 1 when any check failed, 2 on bad usage.
+set -Eeuo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo="$(git -C "$here" rev-parse --show-toplevel)"
+live=https://foundations.mistystep.io
+github=misty-step/foundations
+playwright=playwright==1.64.0
+node_pin=v22.23.2
+
+usage() { sed -n '2,6p' "$0" >&2; exit 2; }
+command="${1:-}"
+case "$command" in
+  doctor|routes|anchors|access|browse|readback|build|serve|stop|all) shift ;;
+  *) usage ;;
+esac
+base="${VERIFY_BASE:-$live}"
+out="${VERIFY_OUT:-${XDG_CACHE_HOME:-$HOME/.cache}/tmp/verify-foundations/$(date -u +%Y%m%dT%H%M%SZ)}"
+paths=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --base|--out) [ $# -ge 2 ] && [ -n "$2" ] || usage
+      if [ "$1" = --base ]; then base="$2"; else out="$2"; fi
+      shift 2 ;;
+    *) paths+=("$1"); shift ;;
+  esac
+done
+base="${base%/}"
+mkdir -p "$out"
+failed=0
+# Any unexpected abort still leaves a failed JSON line and the summary.
+# Subshells just exit; only the main shell reports, so one abort is one line.
+trap '[ "$BASHPID" = "$$" ] || exit 1; report helper "line $LINENO" false "aborted running: $BASH_COMMAND"; summary; exit 1' ERR
+
+summary() {
+  jq -nc --arg out "${out/#$HOME/\~}" --argjson failed "$failed" \
+    '{summary: (if $failed == 0 then "pass" else "fail" end), evidence: $out}'
+}
+
+report() { # check target ok detail
+  local line
+  line="$(jq -nc --arg check "$1" --arg target "$2" --argjson ok "$3" --arg detail "$4" \
+    '{check: $check, target: $target, ok: $ok, detail: $detail}')"
+  printf '%s\n' "$line" | tee -a "$out/checks.jsonl"
+  [ "$3" = true ] || failed=1
+}
+
+fetch() { # url -> "status|content-type|redirect" ; body in $out/body
+  curl --silent --show-error --connect-timeout 5 --max-time 15 -o "$out/body" \
+    -w '%{http_code}|%{content_type}|%{redirect_url}\n' "$1" || printf '000|none|\n'
+}
+
+served_revision() {
+  curl --silent --fail --max-time 15 "$base/" | grep -oE "github.com/$github/commit/[0-9a-f]{40}" |
+    head -1 | sed 's|.*/||'
+}
+
+revision_for() { # check -> sets rev, or reports why the check cannot run
+  rev="$(served_revision || true)"
+  [ -n "$rev" ] || report "$1" "$base/" false "no source revision served; run doctor"
+  [ -n "$rev" ]
+}
+
+source_at() { # revision file
+  git -C "$repo" cat-file -e "$1" 2>/dev/null || git -C "$repo" fetch --quiet origin "$1"
+  git -C "$repo" show "$1:$2"
+}
+
+shown() { # a path for evidence: repo-relative, else under ~
+  local path="${1#"$repo"/}"
+  printf '%s' "${path/#$HOME/\~}"
+}
+
+unique_citation() { # file line text -> false when this real file:line:text was already reported
+  local key
+  key="$(realpath -e "$1" 2>/dev/null || printf '%s' "$1"):$2:$3"
+  [ -z "${seen[$key]:-}" ] || return 1
+  seen[$key]=1
+}
+
+slug() { # mirrors src/main.rs: ASCII words joined by '-', bare numbers reserved for articles
+  tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//; s/^([0-9]+)$/section-\1/'
+}
+
+node_run() { # run with the pinned Node, through mise when the default differs
+  if [ "$(node --version 2>/dev/null)" = "$node_pin" ]; then "$@"
+  elif command -v mise >/dev/null; then mise x "node@${node_pin#v}" -- "$@"
+  else printf 'Node %s is required (README pins it).\n' "$node_pin" >&2; return 1
+  fi
+}
+
+doctor() {
+  local tool missing=""
+  for tool in curl git jq gh uv cargo python3 setsid pgrep; do command -v "$tool" >/dev/null || missing+=" $tool"; done
+  report doctor tools "$([ -z "$missing" ] && echo true || echo false)" "missing:${missing:- none}"
+  IFS='|' read -r status type _ < <(fetch "$base/")
+  report doctor "$base/" "$([ "$status" = 200 ] && grep -q '<title>Foundations — Misty Step</title>' "$out/body" &&
+    echo true || echo false)" "status $status, $type"
+  local served master run
+  served="$(served_revision || true)"
+  report doctor "served revision" "$([ -n "$served" ] && echo true || echo false)" "${served:-none in footer}"
+  if [ "$base" = "$live" ]; then
+    master="$(gh api "repos/$github/commits/master" --jq .sha 2>/dev/null || true)"
+    run="$(gh run list -R "$github" --workflow Publication --branch master --event push --limit 1 \
+      --json headSha,status,conclusion,url --jq '.[0] | "\(.headSha) \(.status) \(.conclusion) \(.url)"' 2>/dev/null || true)"
+    report doctor "live is master" "$([ -n "$master" ] && [ "$served" = "$master" ] && echo true || echo false)" \
+      "served ${served:-?}, master ${master:-unreadable}; latest Publication run: ${run:-unreadable}"
+  else
+    report doctor "candidate is HEAD" "$([ "$served" = "$(git -C "$repo" rev-parse HEAD)" ] && echo true || echo false)" \
+      "served ${served:-?}, HEAD $(git -C "$repo" rev-parse HEAD)"
+  fi
+  report doctor "GitHub reader" "$(gh api "repos/$github" --jq .full_name >/dev/null 2>&1 && echo true || echo false)" \
+    "gh $(gh api user --jq .login 2>/dev/null || echo 'not signed in') reads private $github"
+}
+
+routes() {
+  local rev doc path route status type redirect
+  revision_for routes || return 0
+  for doc in index way-of-working; do
+    IFS='|' read -r status type _ < <(fetch "$base/$doc.md")
+    report routes "/$doc.md" "$([ "$status" = 200 ] && [ "$type" = 'text/markdown; charset=utf-8' ] &&
+      cmp -s "$out/body" <(source_at "$rev" "$doc.md") && echo true || echo false)" \
+      "status $status, $type, bytes $(wc -c <"$out/body") vs source at ${rev:0:12}"
+  done
+  for route in / /way-of-working; do
+    path="$([ "$route" = / ] && echo index || echo way-of-working)"
+    IFS='|' read -r status type _ < <(fetch "$base$route")
+    report routes "$route" "$([ "$status" = 200 ] && [[ "$type" == text/html* ]] &&
+      grep -q 'href="/">Constitution</a> · <a href="/way-of-working">Way of working</a>' "$out/body" &&
+      grep -q "href=\"/$path.md\">Markdown</a>" "$out/body" &&
+      grep -q "href=\"https://github.com/$github/commits/master/$path.md\">History</a>" "$out/body" &&
+      grep -q "href=\"https://github.com/$github/commit/$rev\">$rev</a>" "$out/body" && ! grep -q '<script' "$out/body" &&
+      echo true || echo false)" "status $status, $type, nav + revision + Markdown + History links, no script"
+  done
+  for route in /research /research/ci /research/ci/ /research/ci.html /research/ci.md /research/ci-evidence.json \
+    /revision.txt /404.html /_headers /not-a-reference; do
+    IFS='|' read -r status type redirect < <(fetch "$base$route")
+    report routes "$route" "$([ "$status" = 404 ] && [ -z "$redirect" ] && echo true || echo false)" \
+      "status $status${redirect:+, redirects to $redirect}"
+  done
+  IFS='|' read -r status _ < <(fetch "$base/")
+  report routes "/ after 404s" "$([ "$status" = 200 ] && echo true || echo false)" "status $status"
+}
+
+anchors() {
+  local rev ids n lead heading file line url page fragment article
+  revision_for anchors || return 0
+  local doc
+  for doc in index way-of-working; do
+    # Without the served source there is nothing to compare against: that is a failure, not a pass.
+    if ! source_at "$rev" "$doc.md" >"$out/source-$doc.md" 2>/dev/null || [ ! -s "$out/source-$doc.md" ]; then
+      report anchors "$doc.md at ${rev:0:12}" false "cannot read the served source; needs git read access to $github"
+      return 0
+    fi
+    curl --silent --fail --max-time 15 "$base/$([ "$doc" = index ] || echo "$doc")" | tr -d '\n' >"$out/page-$doc.html" ||
+      { report anchors "$base/" false "cannot fetch the $doc page"; return 0; }
+    { grep -oE ' id="[^"]+"' "$out/page-$doc.html" || true; } | cut -d'"' -f2 >"$out/ids-$doc"
+  done
+  # Every numbered article has `/#n`, on the item that starts with article n's title.
+  local articles=0 html
+  while IFS=$'\t' read -r n lead; do
+    articles=$((articles + 1))
+    html="$(printf '%s' "$lead" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')"
+    # Loose lists wrap each article in <p>; tight lists do not.
+    report anchors "/#$n" "$({ grep -qF "<li id=\"$n\"><p><strong>$html</strong>" "$out/page-index.html" ||
+      grep -qF "<li id=\"$n\"><strong>$html</strong>" "$out/page-index.html"; } && echo true || echo false)" \
+      "article $n: $lead"
+  done < <(sed -nE 's/^([0-9]+)\. \*\*([^*]+)\*\*.*/\1\t\2/p' "$out/source-index.md")
+  report anchors "articles in index.md" "$([ "$articles" -gt 0 ] && echo true || echo false)" "$articles numbered articles found"
+  # Every bold-led section and subheading of the Way of working has its slug.
+  while IFS= read -r lead; do
+    fragment="$(printf '%s' "$lead" | slug)"
+    report anchors "/way-of-working#$fragment" "$(grep -qx "$fragment" "$out/ids-way-of-working" && echo true || echo false)" "section $lead"
+  done < <(sed -nE 's/^\*\*([^*]+)\.\*\*.*/\1/p; s/^#{2,6} (.+)$/\1/p' "$out/source-way-of-working.md")
+  # Every Foundations link with a fragment, or "Foundations ... article N", cited in guidance resolves.
+  if [ ${#paths[@]} -eq 0 ]; then
+    paths=("$repo")
+    for file in "$HOME/.claude/AGENTS.md" "$HOME/.claude/CLAUDE.md" "$HOME/.codex/AGENTS.md" "$HOME/.agents/skills"; do
+      [ -e "$file" ] && paths+=("$file")
+    done
+  fi
+  # Absolute Foundations links only; relative links inside the two documents are covered above.
+  # Only the two HTML pages have anchors: a fragment on /index.md or any other path fails.
+  # Read legacy guidance too while it still hides AGENTS.md; this never creates it.
+  # A file reached twice through skill adapters is reported once.
+  local -A seen=()
+  while IFS=: read -r file line url; do
+    unique_citation "$file" "$line" "$url" || continue
+    fragment="${url#*#}"
+    page="$(printf '%s' "${url%%#*}" | sed -E 's|^(https?://)?foundations\.mistystep\.io||')"
+    # Exactly these forms redirect to a page and keep the fragment; /index.html/ and the like 404.
+    case "$page" in
+      ''|/|/index|/index/|/index.html) ids="$out/ids-index" ;;
+      /way-of-working|/way-of-working/|/way-of-working.html) ids="$out/ids-way-of-working" ;;
+      *) ids=/dev/null ;;
+    esac
+    report citation "$(shown "$file"):$line" "$(grep -qx "$fragment" "$ids" && echo true || echo false)" "$url"
+  done < <(grep -RnoIHE --exclude-dir={node_modules,target,dist,.git,evidence} \
+    '(https?://)?foundations\.mistystep\.io(/[A-Za-z0-9_./-]*)?#[A-Za-z0-9_-]+' "${paths[@]}" || true)
+  while IFS=: read -r file line article; do
+    unique_citation "$file" "$line" "$article" || continue
+    n="${article##* }"
+    report citation "$(shown "$file"):$line" "$(grep -qx "$n" "$out/ids-index" && echo true || echo false)" "$article -> /#$n"
+  done < <(grep -RnoIHiE --exclude-dir={node_modules,target,dist,.git,evidence} \
+    'foundations\S* articles? [0-9]+' "${paths[@]}" || true)
+}
+
+access() {
+  local rev status sha state anonymous doc
+  revision_for access || return 0
+  # The repository is private: anonymous readers get GitHub's 404 by design. Org readers use gh.
+  anonymous="$(curl --silent --max-time 15 -o /dev/null -w '%{http_code}' "https://github.com/$github/commit/$rev")"
+  report access "anonymous revision link" "$([ "$anonymous" = 404 ] || [ "$anonymous" = 200 ] && echo true || echo false)" \
+    "status $anonymous (404 = private repository, expected without org access)"
+  sha="$(gh api "repos/$github/commits/$rev" --jq .sha 2>/dev/null || true)"
+  report access "revision link as org reader" "$([ "$sha" = "$rev" ] && echo true || echo false)" "gh api commits/$rev -> ${sha:-unreadable}"
+  state="$(gh api "repos/$github/compare/$rev...master" --jq .status 2>/dev/null || true)"
+  report access "revision is on master" "$([ "$state" = identical ] || [ "$state" = ahead ] && echo true || echo false)" "master is ${state:-unreadable} of $rev"
+  for doc in index way-of-working; do
+    sha="$(gh api "repos/$github/commits?sha=master&path=$doc.md&per_page=1" --jq '.[0].sha' 2>/dev/null || true)"
+    report access "History link $doc.md" "$([ -n "$sha" ] && echo true || echo false)" "latest change ${sha:-unreadable}"
+  done
+}
+
+browse() {
+  local line status=0
+  uv run --quiet --no-project --with "$playwright" python -I -m playwright install chromium >/dev/null
+  uv run --quiet --no-project --with "$playwright" python -I "$here/browse.py" --base "$base" --out "$out" \
+    >"$out/browse.jsonl" 2>"$out/browse.log" || status=$?
+  while IFS= read -r line; do
+    printf '%s\n' "$line" | tee -a "$out/checks.jsonl"
+    [ "$(jq -r .ok <<<"$line" 2>/dev/null)" = true ] || failed=1
+  done <"$out/browse.jsonl"
+  # browse.py exits 3 when it finished with failed checks; anything else nonzero is a crash.
+  [ "$status" = 0 ] || [ "$status" = 3 ] || report browse "$base" false \
+    "driver exited $status: $(grep -m1 -E 'Error|net::ERR_' "$out/browse.log" || grep -v '^[[:space:]]*$' "$out/browse.log" | tail -1)"
+}
+
+readback() {
+  # Build the deployed revision and run the publication's own byte-for-byte readback against $base.
+  # It builds in its own target dir: sharing this checkout's would let cargo reuse a stale binary.
+  local rev scratch
+  revision_for readback || return 0
+  mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/tmp"
+  scratch="$(mktemp -d "${XDG_CACHE_HOME:-$HOME/.cache}/tmp/verify-foundations-src.XXXXXX")"
+  git -C "$repo" cat-file -e "$rev" 2>/dev/null || git -C "$repo" fetch --quiet origin "$rev"
+  git -C "$repo" worktree add --quiet --detach "$scratch" "$rev"
+  # Remove the throwaway worktree even if the run is interrupted.
+  trap 'git -C "$repo" worktree remove --force "$scratch" 2>/dev/null || true' EXIT
+  trap 'exit 130' INT TERM
+  if (cd "$scratch" && CARGO_TARGET_DIR="$scratch/target" cargo run --locked --quiet && bash scripts/verify-served.sh "$base") \
+    >"$out/readback.log" 2>&1; then
+    report readback "$base" true "$(tail -1 "$out/readback.log") (built ${rev:0:12})"
+  else
+    report readback "$base" false "$(tail -1 "$out/readback.log") (built ${rev:0:12})"
+  fi
+  git -C "$repo" worktree remove --force "$scratch" 2>/dev/null || true
+  trap - EXIT INT TERM
+}
+
+build() {
+  if (cd "$repo" && node_run npm ci --no-audit --no-fund && node_run npm run check) >"$out/build.log" 2>&1; then
+    report build "npm run check" true "$(grep -E '^test result' "$out/build.log" | tr '\n' ' ')"
+  else
+    report build "npm run check" false "$(tail -3 "$out/build.log" | tr '\n' ' ')"
+  fi
+}
+
+serve() {
+  # Serve this checkout's freshly built dist/ in local workerd, as the publication tests do.
+  local port url
+  if [ -f "$out/serve.pid" ] && server_group >/dev/null; then
+    report serve "$(cat "$out/serve.url")" false "already serving from this --out; stop it first"
+    return 0
+  fi
+  [ -x "$repo/node_modules/.bin/wrangler" ] || (cd "$repo" && node_run npm ci --no-audit --no-fund >/dev/null)
+  (cd "$repo" && cargo run --locked --quiet >/dev/null)
+  port="$(python3 -I -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1",0)); print(s.getsockname()[1])')"
+  url="http://127.0.0.1:$port"
+  # setsid makes the server its own process group; it records that group so stop kills exactly it.
+  # The server outlives this script: it must not inherit the abort trap.
+  (trap - ERR; cd "$repo" && CI=true WRANGLER_SEND_METRICS=false CLOUDFLARE_API_TOKEN='' CLOUDFLARE_ACCOUNT_ID='' \
+    setsid bash -c "echo \$(ps -o pgid= \$\$) >'$out/serve.pid'; $(declare -f node_run); node_pin=$node_pin;
+      node_run node node_modules/wrangler/bin/wrangler.js \
+      dev --local --ip 127.0.0.1 --port $port --inspector-port 0 --show-interactive-dev-session false" \
+    >"$out/serve.log" 2>&1 </dev/null &) 2>/dev/null
+  printf '%s\n' "$url" >"$out/serve.url"
+  for _ in {1..60}; do
+    curl --silent --fail --max-time 2 -o /dev/null "$url/" && break
+    sleep 1
+  done
+  report serve "$url" "$(curl --silent --fail --max-time 2 -o /dev/null "$url/" && echo true || echo false)" \
+    "process group $(tr -d ' ' <"$out/serve.pid"); stop with: verify-foundations stop --out ${out/#$HOME/\~}"
+}
+
+server_group() { # prints the recorded group only while it is still the wrangler server serve started
+  local group port
+  group="$(tr -d ' ' <"$out/serve.pid")"
+  [ -n "$group" ] || return 1
+  port="$(sed 's|.*:||' "$out/serve.url")"
+  pgrep -g "$group" -f "wrangler.js dev --local --ip 127.0.0.1 --port $port " >/dev/null || return 1
+  printf '%s\n' "$group"
+}
+
+stop() {
+  [ -f "$out/serve.pid" ] || { report stop "$out" false "no serve.pid here"; return 0; }
+  local group url
+  url="$(cat "$out/serve.url")"
+  if ! group="$(server_group)"; then
+    rm -f "$out/serve.pid"
+    report stop "$url" "$(curl --silent --max-time 1 -o /dev/null "$url/" && echo false || echo true)" \
+      "recorded process group is no longer this run's server; killed nothing"
+    return 0
+  fi
+  kill -- "-$group" 2>/dev/null || true
+  for _ in {1..10}; do
+    curl --silent --max-time 1 -o /dev/null "$url/" || break
+    sleep 1
+  done
+  rm -f "$out/serve.pid"
+  report stop "$url" "$(curl --silent --max-time 1 -o /dev/null "$url/" && echo false || echo true)" \
+    "killed process group $group, which serve started; $url no longer answers"
+}
+
+case "$command" in
+  doctor|routes|anchors|access|browse|readback|build|serve|stop) "$command" ;;
+  # GitHub access and deploy readback concern the live publication only.
+  all) doctor; routes; anchors; browse; if [ "$base" = "$live" ]; then access; readback; fi ;;
+  *) usage ;;
+esac
+summary
+exit "$failed"
