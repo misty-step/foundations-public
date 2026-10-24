@@ -3,7 +3,7 @@
 {"check":"doctor","target":"http://127.0.0.1:52177/","ok":true,"detail":"status 200, text/html; charset=utf-8"}
 {"check":"doctor","target":"served revision","ok":true,"detail":"f88a9806af817f255b09e3847de06b807ea0b24a"}
 {"check":"doctor","target":"candidate is HEAD","ok":true,"detail":"served f88a9806af817f255b09e3847de06b807ea0b24a, HEAD f88a9806af817f255b09e3847de06b807ea0b24a"}
-{"check":"doctor","target":"GitHub reader","ok":true,"detail":"gh moomooskycow reads private misty-step/foundations"}
+{"check":"doctor","target":"GitHub reader","ok":true,"detail":"gh signed in reads private misty-step/foundations"}
 {"check":"routes","target":"/index.md","ok":true,"detail":"status 200, text/markdown; charset=utf-8, bytes 4372 vs source at f88a9806af81"}
 {"check":"routes","target":"/way-of-working.md","ok":true,"detail":"status 200, text/markdown; charset=utf-8, bytes 8113 vs source at f88a9806af81"}
 {"check":"routes","target":"/","ok":true,"detail":"status 200, text/html; charset=utf-8, nav + revision + Markdown + History links, no script"}

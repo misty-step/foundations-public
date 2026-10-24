@@ -115,7 +115,7 @@ doctor() {
       "served ${served:-?}, HEAD $(git -C "$repo" rev-parse HEAD)"
   fi
   report doctor "GitHub reader" "$(gh api "repos/$github" --jq .full_name >/dev/null 2>&1 && echo true || echo false)" \
-    "gh $(gh api user --jq .login 2>/dev/null || echo 'not signed in') reads private $github"
+    "gh $(gh api user --jq .login >/dev/null 2>&1 && echo 'signed in' || echo 'not signed in') reads private $github"
 }
 
 routes() {

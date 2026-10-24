@@ -2,7 +2,7 @@
 {"check":"doctor","target":"https://foundations.mistystep.io/","ok":true,"detail":"status 200, text/html"}
 {"check":"doctor","target":"served revision","ok":true,"detail":"29c2ec293effc006fce90fb5c155e23caa75ea00"}
 {"check":"doctor","target":"live is master","ok":true,"detail":"served 29c2ec293effc006fce90fb5c155e23caa75ea00, master 29c2ec293effc006fce90fb5c155e23caa75ea00; latest Publication run: 29c2ec293effc006fce90fb5c155e23caa75ea00 completed success https://github.com/misty-step/foundations/actions/runs/39457229174"}
-{"check":"doctor","target":"GitHub reader","ok":true,"detail":"gh moomooskycow reads private misty-step/foundations"}
+{"check":"doctor","target":"GitHub reader","ok":true,"detail":"gh signed in reads private misty-step/foundations"}
 {"check":"routes","target":"/index.md","ok":true,"detail":"status 200, text/markdown; charset=utf-8, bytes 4372 vs source at 29c2ec293eff"}
 {"check":"routes","target":"/way-of-working.md","ok":true,"detail":"status 200, text/markdown; charset=utf-8, bytes 8113 vs source at 29c2ec293eff"}
 {"check":"routes","target":"/","ok":true,"detail":"status 200, text/html, nav + revision + Markdown + History links, no script"}
