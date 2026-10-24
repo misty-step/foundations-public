@@ -10,4 +10,4 @@ pulldown-cmark = { version = "=0.13.4", default-features = false, features = ["h
 
 [dev-dependencies]
 regex = "=1.12.2"
-tempfile = "=3.23.0"
+tempfile = "=3.27.0"
